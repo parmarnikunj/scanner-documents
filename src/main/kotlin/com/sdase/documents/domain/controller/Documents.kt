@@ -3,6 +3,7 @@ package com.sdase.documents.domain.controller
 import com.sdase.documents.domain.repositories.DocumentRepository
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.core.io.ClassPathResource
+import org.springframework.core.io.InputStreamResource
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,14 +18,11 @@ import java.nio.file.Paths
 @RequestMapping("/documents")
 class Documents(private val documentRepository: DocumentRepository) {
 
-    @GetMapping(
-        "/{docId}",
-        produces = [MediaType.APPLICATION_PDF_VALUE]
-        )
-    fun document(@PathVariable docId:String): Mono<ResponseEntity<ByteArray>> {
-        val responce =  ResponseEntity
+    @GetMapping("/{docId}", produces = [MediaType.APPLICATION_PDF_VALUE])
+    fun document(@PathVariable docId:String): ResponseEntity<InputStreamResource> {
+        val response =  ResponseEntity
             .ok()
-            .body(documentRepository.get(docId))
-        return Mono.just(responce)
+            .body(InputStreamResource(documentRepository.get(docId).inputStream))
+        return response
     }
 }
